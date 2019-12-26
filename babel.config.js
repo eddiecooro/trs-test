@@ -14,7 +14,6 @@ module.exports = {
           gate: './src/gate',
           helpers: './src/helpers',
           hooks: './src/view/hooks',
-          i18n: './src/i18n',
           routes: './src/routes',
           store: './src/store',
           view: './src/view',
