@@ -91,12 +91,42 @@ export default function createTabNavigator<
       return null;
     };
 
+    _getFirstFixedRoutes = () => {
+      const { routes } = this.props.navigation.state;
+      const { descriptors } = this.props;
+      return routes.filter(route => {
+        const descriptor = descriptors[route.key];
+        return descriptor.options.fixed && descriptor.options.fixed === 'first';
+      });
+    };
+
+    _getLastFixedRoutes = () => {
+      const { routes } = this.props.navigation.state;
+      const { descriptors } = this.props;
+      return routes.filter(route => {
+        const descriptor = descriptors[route.key];
+        return descriptor.options.fixed && descriptor.options.fixed === 'last';
+      });
+    };
+
+    _getNonFixedRoutes = () => {
+      const { routes } = this.props.navigation.state;
+      const { descriptors } = this.props;
+      return routes.filter(route => {
+        const descriptor = descriptors[route.key];
+        return !descriptor.options.fixed;
+      });
+    };
+
     _getLabelText = ({ route }: { route: NavigationRoute }) => {
       const { descriptors } = this.props;
       const descriptor = descriptors[route.key];
       const options = descriptor.options;
 
       if (options.tabBarLabel) {
+        if (typeof options.tabBarLabel === 'function') {
+          return options.tabBarLabel(options.title || route.routeName);
+        }
         return options.tabBarLabel;
       }
 
@@ -205,7 +235,7 @@ export default function createTabNavigator<
         SwitchActions.jumpTo({
           routeName,
           key: navigation.state.key,
-        })
+        }),
       );
     };
 
@@ -228,6 +258,9 @@ export default function createTabNavigator<
         <TabView
           {...navigationConfig}
           {...descriptor.options}
+          nonFixedRoutes={this._getNonFixedRoutes()}
+          firstFixedRoutes={this._getFirstFixedRoutes()}
+          lastFixedRoutes={this._getLastFixedRoutes()}
           getLabelText={this._getLabelText}
           getAccessibilityLabel={this._getAccessibilityLabel}
           getTestID={this._getTestID}
@@ -251,7 +284,7 @@ export default function createTabNavigator<
       NavigationTabRouterConfig,
       Partial<Options>,
       NavigationTabProp<NavigationRoute, any>
-    > = {}
+    > = {},
   ) => {
     const router = TabRouter(routes, config as any);
 

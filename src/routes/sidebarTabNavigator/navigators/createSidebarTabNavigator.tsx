@@ -14,7 +14,7 @@ import { ScreenContainer } from 'react-native-screens';
 import createTabNavigator, {
   NavigationViewProps,
 } from '../utils/createTabNavigator';
-import BottomTabBar from '../views/BottomTabBar';
+import SideTabBar from '../views/SideTabBar';
 import ResourceSavingScene from '../views/ResourceSavingScene';
 import {
   NavigationTabProp,
@@ -41,6 +41,9 @@ type Props = NavigationViewProps &
     navigation: NavigationTabProp;
     descriptors: SceneDescriptorMap;
     screenProps?: unknown;
+    firstFixedRoutes: NavigationRoute[];
+    lastFixedRoutes: NavigationRoute[];
+    nonFixedRoutes: NavigationRoute[];
   };
 
 type State = {
@@ -87,7 +90,7 @@ class TabNavigationView extends React.PureComponent<Props, State> {
 
   _renderTabBar = () => {
     const {
-      tabBarComponent: TabBarComponent = BottomTabBar,
+      tabBarComponent: TabBarComponent = SideTabBar,
       tabBarOptions,
       navigation,
       screenProps,
@@ -114,6 +117,9 @@ class TabNavigationView extends React.PureComponent<Props, State> {
     return (
       <TabBarComponent
         {...tabBarOptions}
+        firstFixedRoutes={this.props.firstFixedRoutes}
+        lastFixedRoutes={this.props.lastFixedRoutes}
+        nonFixedRoutes={this.props.nonFixedRoutes}
         jumpTo={this._jumpTo}
         navigation={navigation}
         screenProps={screenProps}

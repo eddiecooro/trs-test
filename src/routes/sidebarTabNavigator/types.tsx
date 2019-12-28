@@ -99,7 +99,7 @@ export type BottomTabBarOptions = {
   style?: StyleProp<ViewStyle>;
 };
 
-export type ButtonComponentProps = {
+export type ButtonComponentProps = React.PropsWithChildren<{
   route: NavigationRoute;
   focused: boolean;
   onPress: () => void;
@@ -109,10 +109,13 @@ export type ButtonComponentProps = {
   accessibilityRole?: AccessibilityRole;
   accessibilityStates?: AccessibilityStates[];
   style?: StyleProp<ViewStyle>;
-};
+}>;
 
 export type BottomTabBarProps = BottomTabBarOptions & {
   navigation: NavigationTabProp;
+  firstFixedRoutes: NavigationRoute[];
+  lastFixedRoutes: NavigationRoute[];
+  nonFixedRoutes: NavigationRoute[];
   onTabPress: (props: { route: NavigationRoute }) => void;
   onTabLongPress: (props: { route: NavigationRoute }) => void;
   getAccessibilityLabel: (props: {
@@ -204,7 +207,16 @@ export type MaterialTabBarProps = MaterialTabBarOptions & {
 
 export type NavigationCommonTabOptions = {
   title?: string;
-  tabBarLabel?: React.ReactNode;
+  tabBarLabel?:
+    | React.ReactNode
+    | ((
+        title?: string,
+      ) => (props: {
+        focused: boolean;
+        tintColor?: string;
+        orientation: string;
+      }) => React.ReactNode);
+  fixed?: string;
   tabBarVisible?: boolean;
   tabBarAccessibilityLabel?: string;
   tabBarTestID?: string;

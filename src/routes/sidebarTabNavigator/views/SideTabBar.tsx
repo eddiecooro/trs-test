@@ -9,7 +9,12 @@ import {
   LayoutChangeEvent,
 } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
-import { ThemeColors, ThemeContext, NavigationRoute } from 'react-navigation';
+import {
+  ThemeColors,
+  ThemeContext,
+  NavigationRoute,
+  ScrollView,
+} from 'react-navigation';
 
 import CrossFadeIcon from './CrossFadeIcon';
 import withDimensions from '../utils/withDimensions';
@@ -96,6 +101,7 @@ class TabBarSide extends React.Component<BottomTabBarProps, State> {
     activeBackgroundColor: 'transparent',
     inactiveBackgroundColor: 'transparent',
     showLabel: true,
+    showIcon: true,
     allowFontScaling: true,
     adaptive: isIOS11,
     safeAreaInset: { bottom: 'never', top: 'never' } as React.ComponentProps<
@@ -255,7 +261,7 @@ class TabBarSide extends React.Component<BottomTabBarProps, State> {
     route: NavigationRoute;
     focused: boolean;
   }) => {
-    const { labelStyle, showLabel, allowFontScaling } = this.props;
+    const { labelStyle, showLabel, showIcon, allowFontScaling } = this.props;
 
     if (showLabel === false) {
       return null;
@@ -293,22 +299,111 @@ class TabBarSide extends React.Component<BottomTabBarProps, State> {
     return label;
   };
 
-  render() {
-    const {
-      navigation,
-      keyboardHidesTabBar,
-      onTabPress,
-      onTabLongPress,
-      safeAreaInset,
-      style,
-      tabStyle,
-    } = this.props;
+  _renderIcon = ({
+    route,
+    focused,
+  }: {
+    route: NavigationRoute;
+    focused: boolean;
+  }) => {
+    const { renderIcon, showIcon, showLabel } = this.props;
 
-    const { routes } = navigation.state;
-    const isDark = this.context === 'dark';
+    if (showIcon === false) {
+      return null;
+    }
 
+    const activeTintColor = this._getActiveTintColor();
+    const inactiveTintColor = this._getInactiveTintColor();
+    const activeOpacity = focused ? 1 : 0;
+    const inactiveOpacity = focused ? 0 : 1;
+
+    return renderIcon({
+      route,
+      focused,
+      tintColor: focused ? activeTintColor : inactiveTintColor,
+      horizontal: false,
+    });
+    return (
+      <CrossFadeIcon
+        route={route}
+        horizontal={false}
+        activeOpacity={activeOpacity}
+        inactiveOpacity={inactiveOpacity}
+        activeTintColor={activeTintColor}
+        inactiveTintColor={inactiveTintColor}
+        renderIcon={renderIcon}
+        style={[
+          styles.iconWithExplicitWidth,
+          { backgroundColor: 'yellow' },
+          showLabel === false && styles.iconWithoutLabel,
+          showLabel !== false && styles.iconWithLabel,
+        ]}
+      />
+    );
+  };
+
+  renderRoute = (route: NavigationRoute, index: number) => {
+    const { navigation, onTabPress, onTabLongPress, tabStyle } = this.props;
     const activeBackgroundColor = this._getActiveBackgroundColor();
     const inactiveBackgroundColor = this._getInactiveBackgroundColor();
+
+    const focused =
+      route.key === navigation.state.routes[navigation.state.index].key;
+    const scene = { route, focused };
+
+    const accessibilityLabel = this.props.getAccessibilityLabel({
+      route,
+    });
+    const accessibilityRole = this.props.getAccessibilityRole({
+      route,
+    });
+
+    const accessibilityStates = this.props.getAccessibilityStates(scene);
+
+    const testID = this.props.getTestID({ route });
+
+    const backgroundColor = focused
+      ? activeBackgroundColor
+      : inactiveBackgroundColor;
+    const ButtonComponent =
+      this.props.getButtonComponent({ route }) ||
+      TouchableWithoutFeedbackWrapper;
+
+    return (
+      <ButtonComponent
+        key={route.key}
+        route={route}
+        focused={focused}
+        onPress={() => onTabPress({ route })}
+        onLongPress={() => onTabLongPress({ route })}
+        testID={testID}
+        accessibilityLabel={accessibilityLabel}
+        accessibilityRole={accessibilityRole}
+        accessibilityStates={accessibilityStates}
+        // @ts-ignore
+        style={StyleSheet.flatten([
+          styles.tab,
+          { backgroundColor },
+          styles.tabLandscape,
+          tabStyle,
+        ])}>
+        {this._renderIcon(scene)}
+        {this._renderLabel(scene)}
+      </ButtonComponent>
+    );
+  };
+
+  render() {
+    const {
+      keyboardHidesTabBar,
+      safeAreaInset,
+      style,
+      nonFixedRoutes,
+      firstFixedRoutes,
+      lastFixedRoutes,
+    } = this.props;
+
+    const isDark = this.context === 'dark';
 
     const {
       position,
@@ -374,53 +469,11 @@ class TabBarSide extends React.Component<BottomTabBarProps, State> {
         }
         onLayout={this._handleLayout}>
         <SafeAreaView style={tabBarStyle} forceInset={safeAreaInset}>
-          {routes.map((route, index) => {
-            const focused = index === navigation.state.index;
-            const scene = { route, focused };
-            const accessibilityLabel = this.props.getAccessibilityLabel({
-              route,
-            });
-
-            const accessibilityRole = this.props.getAccessibilityRole({
-              route,
-            });
-
-            const accessibilityStates = this.props.getAccessibilityStates(
-              scene,
-            );
-
-            const testID = this.props.getTestID({ route });
-
-            const backgroundColor = focused
-              ? activeBackgroundColor
-              : inactiveBackgroundColor;
-
-            const ButtonComponent =
-              this.props.getButtonComponent({ route }) ||
-              TouchableWithoutFeedbackWrapper;
-
-            return (
-              <ButtonComponent
-                key={route.key}
-                route={route}
-                focused={focused}
-                onPress={() => onTabPress({ route })}
-                onLongPress={() => onTabLongPress({ route })}
-                testID={testID}
-                accessibilityLabel={accessibilityLabel}
-                accessibilityRole={accessibilityRole}
-                accessibilityStates={accessibilityStates}
-                // @ts-ignore
-                style={[
-                  styles.tab,
-                  { backgroundColor },
-                  styles.tabLandscape,
-                  tabStyle,
-                ]}>
-                {this._renderLabel(scene)}
-              </ButtonComponent>
-            );
-          })}
+          {firstFixedRoutes.map(this.renderRoute)}
+          <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+            {nonFixedRoutes.map(this.renderRoute)}
+          </ScrollView>
+          {lastFixedRoutes.map(this.renderRoute)}
         </SafeAreaView>
       </Animated.View>
     );
@@ -465,6 +518,10 @@ const styles = StyleSheet.create({
   },
   iconWithLabel: {
     flex: 1,
+  },
+  iconWithExplicitWidth: {
+    // @ts-ignore
+    height: DEFAULT_WIDTH,
   },
   label: {
     textAlign: 'center',

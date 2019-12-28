@@ -5,4 +5,4 @@ export {
 /**
  * Views
  */
-export { default as BottomTabBar } from './views/BottomTabBar';
+export { default as BottomTabBar } from './views/SideTabBar';
