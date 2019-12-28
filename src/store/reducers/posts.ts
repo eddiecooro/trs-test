@@ -1,15 +1,25 @@
-import { createSlice } from 'redux-starter-kit';
+import { createSlice } from '@reduxjs/toolkit';
 
-interface PostsState {}
+interface Post {
+  id: number;
+  category: string;
+  title: string;
+  description: string;
+  bookmarked: boolean;
+}
+
+type PostsState = { [index: number]: Post };
 
 const initialState: PostsState = {};
 
 const appSlice = createSlice({
-  slice: 'posts',
+  name: 'posts',
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    postsRecieved: () => {},
+  },
 });
 
-export const {} = appSlice.actions;
+export const { postsRecieved } = appSlice.actions;
 
 export default appSlice.reducer;

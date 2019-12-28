@@ -1,12 +1,14 @@
 import axios, { Method, AxiosRequestConfig } from 'axios';
 import isEmpty from 'lodash/isEmpty';
+import mock from './mockBackend';
 
 import tokenHelper from 'helpers/token';
-import env from 'react-native-dotenv';
-
-const API_URL = env.API_URL;
+import { API_URL, MOCK_API } from 'react-native-dotenv';
 
 const client = axios.create({ baseURL: API_URL });
+if (MOCK_API) {
+  mock(client);
+}
 
 const call = async (method: Method, url: string, data = {}) => {
   const token = await tokenHelper.get();

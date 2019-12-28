@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from 'redux-starter-kit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface LanguageState {
   language: {
@@ -17,7 +17,7 @@ const initialState: AppState = {
 };
 
 const appSlice = createSlice({
-  slice: 'app',
+  name: 'app',
   initialState: initialState,
   reducers: {
     changeLanguage(state, action: PayloadAction<AppState['language']>) {

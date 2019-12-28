@@ -8,21 +8,11 @@ const methods = {
   put: (url: string, data = {}) => api.put(url, data),
 };
 
-const auth = {
-  checkMe: () => api.get('check/me'),
-  checkUser: () => api.get('check/user'),
-  checkVer: () => api.get('check/ver'),
-
-  signIn: (data: any) => api.post('sign-in', data),
-  signInConfirmation: (data: any) => api.post('sign-in-confirmation', data),
-
-  signOut: () => api.signOut('sign-out'),
-
-  signUp: (data: any) => api.post('sign-up', data),
-  signUpConfirmation: (data: any) => api.post('sign-up-confirmation', data),
+const requests = {
+  getCategories: () => methods.get('/categories'),
 };
 
 export default {
   ...methods,
-  ...auth,
+  ...requests,
 };

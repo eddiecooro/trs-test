@@ -20,46 +20,78 @@ const IconComponent = ({ name, tintColor, style }: IconComponentProps) => (
   />
 );
 
-export default (routes: Parameters<typeof createSidebarTabNavigator>[0]) =>
+export default (
+  routes: Parameters<typeof createSidebarTabNavigator>[0],
+  initialRouteName = 'Settings',
+) =>
   createAppContainer(
-    createSidebarTabNavigator(routes, {
-      tabBarOptions: {
-        labelStyle: {},
-        activeTintColor: 'darkred',
+    createSidebarTabNavigator(
+      {
+        ...routes,
+        Settings: {
+          screen: () => (
+            <View
+              style={{
+                flex: 1,
+                height: 50,
+              }}></View>
+          ),
+          navigationOptions: { fixed: 'first' },
+        },
+        Search: {
+          navigationOptions: {
+            fixed: 'last',
+          },
+          screen: () => (
+            <View
+              style={{
+                flex: 1,
+                height: 50,
+              }}></View>
+          ),
+        },
       },
-      initialRouteName: 'None2',
-      lazy: true,
-      defaultNavigationOptions: ({ navigation }) => ({
-        tabBarIcon: ({ tintColor }) => {
-          const { routeName } = navigation.state;
-          if (routeName === 'Settings')
-            return <IconComponent name="ios-settings" tintColor={tintColor} />;
-          else if (routeName === 'Search')
-            return <IconComponent name="ios-search" tintColor={tintColor} />;
-          else return null;
+      {
+        tabBarOptions: {
+          labelStyle: {},
+          activeTintColor: 'darkred',
         },
-        tabBarLabel: label => ({ tintColor }) => {
-          const { routeName } = navigation.state;
-          const focused = navigation.isFocused();
-          if (routeName === 'Settings' || routeName === 'Search') {
-            return null;
-          } else {
-            return (
-              <View style={styles.labelWrapper}>
-                <Text numberOfLines={1} style={styles.label}>
-                  {label}
-                </Text>
-                {focused ? (
-                  <Text
-                    style={[styles.label, { color: tintColor, fontSize: 8 }]}>
-                    ⬤
+        initialRouteName,
+        lazy: true,
+        defaultNavigationOptions: ({ navigation }) => ({
+          tabBarIcon: ({ tintColor }) => {
+            const { routeName } = navigation.state;
+            if (routeName === 'Settings')
+              return (
+                <IconComponent name="ios-settings" tintColor={tintColor} />
+              );
+            else if (routeName === 'Search')
+              return <IconComponent name="ios-search" tintColor={tintColor} />;
+            else return null;
+          },
+          tabBarLabel: label => ({ tintColor }) => {
+            const { routeName } = navigation.state;
+            const focused = navigation.isFocused();
+            if (routeName === 'Settings' || routeName === 'Search') {
+              return null;
+            } else {
+              return (
+                <View style={styles.labelWrapper}>
+                  <Text numberOfLines={1} style={styles.label}>
+                    {label}
                   </Text>
-                ) : null}
-              </View>
-            );
-          }
-        },
-        tabBarButtonComponent: RotatedTabButtonComponent,
-      }),
-    }),
+                  {focused ? (
+                    <Text
+                      style={[styles.label, { color: tintColor, fontSize: 8 }]}>
+                      ⬤
+                    </Text>
+                  ) : null}
+                </View>
+              );
+            }
+          },
+          tabBarButtonComponent: RotatedTabButtonComponent,
+        }),
+      },
+    ),
   );

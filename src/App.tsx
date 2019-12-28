@@ -6,6 +6,7 @@ import { store, persistor } from 'store';
 import { enableScreens } from 'react-native-screens';
 import Loading from 'view/components/Loading';
 import Navigator from 'routes';
+import api from 'gate';
 
 enableScreens();
 
