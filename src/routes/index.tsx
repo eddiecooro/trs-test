@@ -4,22 +4,32 @@ import createAppNavigator from './createAppNavigator';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCategories } from 'store/reducers/categories';
 import { selectCategories } from 'store/selectors/category';
+import CategoryScreen from 'view/pages/category';
 
 const Navigator = () => {
   const dispatch = useDispatch();
 
-  const categories = useSelector(selectCategories);
   React.useEffect(() => {
     dispatch(fetchCategories());
   }, []);
 
+  const categories = useSelector(selectCategories);
+  const memoizedCategories = React.useMemo(() => categories, [
+    categories.map(category => category.categoryIdentifier).join(','),
+  ]);
+
   const routes = React.useMemo<Parameters<typeof createAppNavigator>[0]>(() => {
-    function createRoute(category: typeof categories[0]) {
+    function createRoute(
+      category: typeof categories[0],
+    ): Parameters<typeof createAppNavigator>[0][0] {
       return {
         navigationOptions: {
           title: category.categoryDisplayName,
         },
-        screen: () => <View style={{ flex: 1, height: 50 }}></View>,
+        params: {
+          category: category.categoryIdentifier,
+        },
+        screen: CategoryScreen,
       };
     }
     return categories.reduce(
@@ -29,7 +39,7 @@ const Navigator = () => {
       }),
       {},
     );
-  }, [categories]);
+  }, [memoizedCategories]);
 
   const AppNavigator = React.useMemo(
     () =>

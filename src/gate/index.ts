@@ -10,6 +10,8 @@ const methods = {
 
 const requests = {
   getCategories: () => methods.get('/categories'),
+  getCategoryPosts: (category: string) =>
+    methods.get(`/categories/${category}`),
 };
 
 export default {

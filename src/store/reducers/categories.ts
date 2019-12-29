@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { fromEntries } from 'helpers/util';
 import { AppThunk } from 'store';
+import { getPostsSuccess, Post } from './posts';
 import gate from 'gate';
 
-interface Category {
+export interface Category {
   categoryIdentifier: string;
   categoryDisplayName: string;
+  posts?: Post['id'][];
 }
 type CategoriesState = Category[];
 
@@ -16,7 +17,26 @@ const appSlice = createSlice({
   initialState: initialState,
   reducers: {
     getCategoriesSuccess: (state, action: PayloadAction<Category[]>) =>
-      action.payload,
+      action.payload.map(category => {
+        return {
+          posts: [],
+          ...category,
+          ...state.find(
+            c => c.categoryIdentifier === category.categoryIdentifier,
+          ),
+        };
+      }),
+  },
+  extraReducers: {
+    [getPostsSuccess.type]: (state, action: PayloadAction<Post[]>) => {
+      action.payload.forEach(post => {
+        const category = state.find(
+          v => v.categoryIdentifier === post.category,
+        );
+        if (category)
+          category.posts = [...new Set([...(category.posts || []), post.id])];
+      });
+    },
   },
 });
 

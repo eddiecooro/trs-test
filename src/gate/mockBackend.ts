@@ -19,8 +19,22 @@ const mockApis = () => {
   });
 
   mock.onGet(/\/categories\/\S*/).reply(config => {
-    console.log(config.url);
-    return [200, {}];
+    const urlParts = config.url && config.url.split('/');
+    if (urlParts) {
+      const category =
+        urlParts[urlParts.length - 1] || urlParts[urlParts.length - 2];
+      if (category) {
+        return [
+          200,
+          {
+            posts: data
+              .filter(d => d.categoryIdentifier === category)
+              .map(d => ({ ...d, category: d.categoryIdentifier })),
+          },
+        ];
+      }
+    }
+    return [401, { error: 'invalid category' }];
   });
 };
 

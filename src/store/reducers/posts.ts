@@ -1,6 +1,9 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AppThunk } from 'store';
+import gate from 'gate';
+import { fromEntries } from 'helpers/util';
 
-interface Post {
+export interface Post {
   id: number;
   category: string;
   title: string;
@@ -16,10 +19,26 @@ const appSlice = createSlice({
   name: 'posts',
   initialState: initialState,
   reducers: {
-    postsRecieved: () => {},
+    getPostsSuccess: (state, action: PayloadAction<Post[]>) => {
+      return {
+        ...state,
+        ...fromEntries(action.payload.map(post => [post.id, post])),
+      };
+    },
   },
 });
 
-export const { postsRecieved } = appSlice.actions;
+export const { getPostsSuccess } = appSlice.actions;
 
 export default appSlice.reducer;
+
+export const fetchCategoryPosts = (
+  categoryIdentifier: string,
+): AppThunk => async dispatch => {
+  try {
+    const res = await gate.getCategoryPosts(categoryIdentifier);
+    dispatch(getPostsSuccess(res.posts));
+  } catch (e) {
+    // Pass
+  }
+};

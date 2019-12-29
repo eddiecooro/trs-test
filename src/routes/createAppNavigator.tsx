@@ -5,6 +5,8 @@ import createSidebarTabNavigator from './sidebarTabNavigator/navigators/createSi
 import { StyleProp, TextStyle, StyleSheet, View, Text } from 'react-native';
 import styles from './styles';
 import RotatedTabButtonComponent from './RotatedTabButtonComponent';
+import SettingsScreen from 'view/pages/settings';
+import SearchScreen from 'view/pages/search';
 
 interface IconComponentProps {
   name: string;
@@ -29,26 +31,12 @@ export default (
       {
         ...routes,
         Settings: {
-          screen: () => (
-            <View
-              style={{
-                flex: 1,
-                height: 50,
-              }}></View>
-          ),
+          screen: SettingsScreen,
           navigationOptions: { fixed: 'first' },
         },
         Search: {
-          navigationOptions: {
-            fixed: 'last',
-          },
-          screen: () => (
-            <View
-              style={{
-                flex: 1,
-                height: 50,
-              }}></View>
-          ),
+          screen: SearchScreen,
+          navigationOptions: { fixed: 'last' },
         },
       },
       {
