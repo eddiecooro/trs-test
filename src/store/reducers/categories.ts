@@ -1,13 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppThunk } from 'store';
-import { getPostsSuccess, Post } from './posts';
+import { getPostsSuccess } from './posts';
+import { Post } from '../../types';
 import gate from 'gate';
+import { Category } from '../../types';
 
-export interface Category {
-  categoryIdentifier: string;
-  categoryDisplayName: string;
-  posts?: Post['id'][];
-}
 type CategoriesState = Category[];
 
 const initialState: CategoriesState = [];

@@ -2,14 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppThunk } from 'store';
 import gate from 'gate';
 import { fromEntries } from 'helpers/util';
-
-export interface Post {
-  id: number;
-  category: string;
-  title: string;
-  description: string;
-  bookmarked: boolean;
-}
+import { Post } from '../../types';
 
 type PostsState = { [index: number]: Post };
 
@@ -22,13 +15,18 @@ const appSlice = createSlice({
     getPostsSuccess: (state, action: PayloadAction<Post[]>) => {
       return {
         ...state,
-        ...fromEntries(action.payload.map(post => [post.id, post])),
+        ...fromEntries(
+          action.payload.map(post => [post.id, { ...state[post.id], ...post }]),
+        ),
       };
+    },
+    togglePostBookmark: (state, action: PayloadAction<Post['id']>) => {
+      state[action.payload].bookmarked = !state[action.payload].bookmarked;
     },
   },
 });
 
-export const { getPostsSuccess } = appSlice.actions;
+export const { getPostsSuccess, togglePostBookmark } = appSlice.actions;
 
 export default appSlice.reducer;
 

@@ -2,6 +2,9 @@ export default {
   get Appbar() {
     return require('react-native-paper').Appbar;
   },
+  get Text() {
+    return require('./Text').default;
+  },
   get FlatList() {
     return require('react-native').FlatList;
   },
@@ -10,9 +13,6 @@ export default {
   },
   get Loading() {
     return require('./Loading').default;
-  },
-  get Text() {
-    return require('react-native').Text;
   },
   get TouchableOpacity() {
     return require('react-native').TouchableOpacity;
