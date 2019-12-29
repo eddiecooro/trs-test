@@ -15,7 +15,6 @@ import { Post } from 'src/types';
 import { selectCategory } from 'store/selectors/category';
 import Text from 'view/components/Text';
 import PostItem from './PostItem';
-import { Title } from 'react-native-paper';
 import { TapOutsideProvider } from 'helpers/TapOutside';
 
 interface Props extends NavigationInjectedProps {}
@@ -45,7 +44,7 @@ const CategoryScreen = (props: Props) => {
     <TapOutsideProvider>
       {responder => (
         <View onStartShouldSetResponder={responder} style={styles.container}>
-          <Title style={styles.title}>{category?.categoryDisplayName}</Title>
+          <Text style={styles.title}>{category?.categoryDisplayName}</Text>
           <FlatList
             keyExtractor={item => String(item.id)}
             refreshControl={

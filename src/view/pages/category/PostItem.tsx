@@ -1,15 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Post } from 'src/types';
-import { Card } from 'react-native-paper';
 import Text from 'view/components/Text';
-import { Avatar } from 'react-native-paper';
 import {
   StyleSheet,
   TextStyle,
   View,
   ViewStyle,
-  Image,
   ImageStyle,
   TouchableOpacity,
   ImageBackground,
