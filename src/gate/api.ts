@@ -28,24 +28,12 @@ const call = async (method: Method, url: string, data = {}) => {
     request.data = data;
   }
 
-  try {
-    const response = await client(request);
+  const response = await client(request);
 
-    return Promise.resolve(response.data);
-  } catch (error) {
-    return Promise.reject(error.response);
-  }
-};
-
-const auth = {
-  async signOut(url: string) {
-    tokenHelper.clear();
-    call('post', url);
-  },
+  return response.data;
 };
 
 export default {
-  ...auth,
   delete: (url: string, data = {}) => call('delete', url, data),
   get: (url: string, data = {}) => call('get', url, data),
   patch: (url: string, data = {}) => call('patch', url, data),
